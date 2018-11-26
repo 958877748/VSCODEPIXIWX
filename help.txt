@@ -1,0 +1,36 @@
+------------- 项目 -------------
+proj/
+   ├─ src/ ts代码
+   ├─ dist/ 
+   ├─ node_modules/ node模块
+   └─ .vscode/
+            ├─ launch.json 运行配置
+            └─ tasks.json 任务配置
+ts代码使用 namespace 开发,无需 import
+运行时会调用task里的任务,进行编译
+
+------------- package.json -------------
+
+--save-dev 安装的包会进入 devDependencies
+devDependencies 是只会在开发环境下依赖的模块，生产环境不会被打入包内
+
+--save 安装的包会进入 dependencies
+dependencies 依赖的包不仅开发环境能使用，生产环境也能使用
+
+Tips: 加入 "private": true 以消除黄色警告
+
+------------- npm命令 ------------
+
+安装
+npm install --save-dev
+安装 .d.ts
+npm install --save-dev @types/
+
+------------ .d.ts ------------
+例如 fgui 
+在下面目录添加文件
+node_modules/@types/fgui/index.d.ts
+文件内容如下
+declare namespace fgui {
+    class className {}
+}
