@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Hello World!</title>
+    </head>
+    <body>
+		<canvas name='canvas' width="640" height='1136'></canvas>
+        <script src="js/libs/pixi.js"></script>
+        <script src="js/bundle.js"></script>
+        <script>
+            //渲染比例
+            let scale = 4
+			let opt = {}
+			opt.backgroundColor = 0x000000,
+			opt.resolution = 1*scale
+			opt.width = 640/scale
+			opt.height = 1136/scale
+            opt.view = document.getElementsByName('canvas')[0]
+			new 主空间.主应用(opt)
+        </script>
+    </body>
+</html>
