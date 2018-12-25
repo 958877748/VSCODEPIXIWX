@@ -15,6 +15,10 @@ namespace 主空间 {
                 let 地图数据 = PIXI.loader.resources['地图数据'].data
                 let 地图 = new 地图类(地图图集,地图数据)
                 this.主舞台.addChild(地图)
+                地图.interactive = true
+                地图.on('click',()=>{
+                    地图.移动矩形()
+                })
                 // let sheet = PIXI.loader.resources['dilao']
                 // let text = sheet.textures['tiles-9.png']
                 // let sp = new PIXI.Sprite(text)

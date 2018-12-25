@@ -246,6 +246,9 @@ var 主空间;
     class 地图块类 extends PIXI.Sprite {
         constructor() {
             super();
+            /**
+             * 0:未使用,1:正在显示
+             */
             this.显示标识 = 0;
             this.width = 24;
             this.height = 24;
@@ -279,11 +282,15 @@ var 主空间;
     class 地图类 extends PIXI.Container {
         constructor(地图图集, 地图数据) {
             super();
-            this.正在显示的地图块池 = {};
-            this.当前显示标识 = 0;
+            this.正在显示的地图块池 = new Map();
             this.地图数据 = new 主空间.地图数据类(地图数据);
             this.地图块池 = new 主空间.地图块池类(地图图集);
             this.计算实际要显示的块多少();
+            this.根据显示矩形显示所有地图块(this.显示矩形);
+        }
+        移动矩形() {
+            this.显示矩形.x = this.显示矩形.x + 1;
+            this.x = this.x - 1;
             this.根据显示矩形显示所有地图块(this.显示矩形);
         }
         根据显示矩形显示所有地图块(矩形) {
@@ -291,22 +298,31 @@ var 主空间;
             let 左上角顶点 = { x: this.显示矩形.x, y: this.显示矩形.y };
             //2.根据左上角顶点计算需显示的地图块区域
             let 地图块区域 = this.根据左上角顶点计算地图块区域(左上角顶点);
-            //3.当前显示标识+1
-            this.当前显示标识 += 1;
-            //4.循环所有块将显示标识+1
+            //3.循环所有块将显示标识设置为0
             let 所有块 = this.正在显示的地图块池;
             for (const 地图块标识 in 所有块) {
                 if (所有块.hasOwnProperty(地图块标识)) {
                     const 地图块 = 所有块[地图块标识];
-                    地图块.显示标识 = this.当前显示标识;
+                    地图块.显示标识 = 0;
                 }
             }
-            //5.当前显示标识+1
-            this.当前显示标识 += 1;
-            //6.根据地图块区域显示所有地图块
+            //4.根据地图块区域显示所有地图块,并将显示标识设置为1
             for (let 下标x = 0; 下标x <= 地图块区域.width; 下标x++) {
                 for (let 下标y = 0; 下标y <= 地图块区域.height; 下标y++) {
-                    this.根据地图块坐标显示地图块({ x: 地图块区域.x + 下标x, y: 地图块区域.y + 下标y });
+                    const 地图块 = this.根据地图块坐标显示地图块({ x: 地图块区域.x + 下标x, y: 地图块区域.y + 下标y });
+                    地图块.显示标识 = 1;
+                }
+            }
+            //5.循环所有地图块
+            所有块 = this.正在显示的地图块池;
+            for (const 地图块标识 in 所有块) {
+                if (所有块.hasOwnProperty(地图块标识)) {
+                    const 地图块 = 所有块[地图块标识];
+                    //6.将标识为0的回收至池中
+                    if (地图块.显示标识 == 0) {
+                        delete 所有块[地图块标识];
+                        this.地图块池.回收地图块(地图块);
+                    }
                 }
             }
         }
@@ -331,6 +347,7 @@ var 主空间;
                 //7.将图块引用放入正在显示池中
                 this.正在显示的地图块池[地图块标识] = 地图块;
             }
+            return 地图块;
         }
         根据地图块坐标取地图块数据(坐标) {
             //拿到地图所有块数据
@@ -552,6 +569,10 @@ var 主空间;
                 let 地图数据 = PIXI.loader.resources['地图数据'].data;
                 let 地图 = new 主空间.地图类(地图图集, 地图数据);
                 this.主舞台.addChild(地图);
+                地图.interactive = true;
+                地图.on('click', () => {
+                    地图.移动矩形();
+                });
                 // let sheet = PIXI.loader.resources['dilao']
                 // let text = sheet.textures['tiles-9.png']
                 // let sp = new PIXI.Sprite(text)
