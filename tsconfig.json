@@ -1,21 +1,20 @@
 {
     "include": [
-        "src/**/*.ts",
+        "ts/**/*.ts",
     ],
     "compilerOptions": {
-        "module": "amd",
         
         //合并输出到单个文件
-        "outFile": "dist/js/bundle.js",
+        "outFile": "js/bundle.js",
 
         //指定 ECMAScript 目标版本
-        "target": "es2015",
+        "target": "es2016",
 
         //生成相应的声明文件 .d.ts, 作用:写代码时有提示
-        "declaration": false,
+        "declaration": true,
 
         //生成相应的文件 .map, 作用:调试打断点指向ts文件
-        "sourceMap": false,
+        "sourceMap": true,
 
         //显示诊断信息?
         "diagnostics": true,
