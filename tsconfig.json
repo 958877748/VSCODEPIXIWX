@@ -8,10 +8,10 @@
         "outFile": "js/bundle.js",
 
         //指定 ECMAScript 目标版本
-        "target": "es2016",
+        "target": "es6",
 
         //生成相应的声明文件 .d.ts, 作用:写代码时有提示
-        "declaration": true,
+        "declaration": false,
 
         //生成相应的文件 .map, 作用:调试打断点指向ts文件
         "sourceMap": true,

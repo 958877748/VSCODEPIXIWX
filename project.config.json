@@ -2,14 +2,14 @@
 	"description": "项目配置文件。",
 	"setting": {
 		"urlCheck": false,
-		"es6": false,
+		"es6": true,
 		"postcss": true,
 		"minified": false,
 		"newFeature": true,
 		"autoAudits": false
 	},
 	"compileType": "game",
-	"libVersion": "2.4.3",
+	"libVersion": "2.4.2",
 	"appid": "wxf512bff9ee5503d1",
 	"projectname": "wxlx2",
 	"scripts": {

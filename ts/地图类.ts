@@ -14,8 +14,7 @@ namespace 主空间 {
             this.地图数据 = new 地图数据类(地图数据)
             this.地图块池 = new 地图块池类(地图图集)
             this.计算实际要显示的块多少()
-
-
+            this.根据显示矩形显示所有地图块(this.显示矩形)
         }
 
         private 根据显示矩形显示所有地图块(矩形: PIXI.Rectangle) {
