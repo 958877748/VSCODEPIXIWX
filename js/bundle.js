@@ -212,6 +212,281 @@ var 主空间;
 })(主空间 || (主空间 = {}));
 var 主空间;
 (function (主空间) {
+    /** 文件主要分为两大类：
+
+        代码包文件：代码包文件指的是在项目目录中添加的文件。
+
+        本地文件：通过调用接口本地产生，或通过网络下载下来，存储到
+        本地的文件。
+        
+        其中本地文件又分为三种：
+
+        本地临时文件：临时产生，随时会被回收的文件。不限制存储大小。
+
+        本地缓存文件：小程序通过接口把本地临时文件缓存后产生的文件，
+        不能自定义目录和文件名。除非用户主动删除小程序，否则不会被
+        删除。跟本地用户文件共计，普通小程序最多可存储 10MB，游戏
+        类目的小程序最多可存储 50MB。
+
+        本地用户文件：小程序通过接口把本地临时文件缓存后产生的文件，
+        允许自定义目录和文件名。除非用户主动删除小程序，否则不会被
+        删除。跟本地用户文件共计，普通小程序最多可存储 10MB，游戏
+        类目的小程序最多可存储 50MB。
+
+        -代码包文件
+
+        由于代码包文件大小限制，代码包文件适用于放置首次加载时需要
+        的文件，对于内容较大或需要动态替换的文件，不推荐用添加到代
+        码包中，推荐在小游戏启动之后再用下载接口下载到本地。
+
+        -访问代码包文件
+
+        代码包文件的访问方式是从项目根目录开始写文件路径，不支持相
+        对路径的写法。
+
+        -修改代码包文件
+
+        代码包内的文件无法在运行后动态修改或删除，修改代码包文件需
+        要重新发布版本。
+
+        -本地文件
+
+        本地文件指的是小程序被用户添加到手机后，会有一块独立的文件
+        存储区域，以用户维度隔离。即同一台手机，每个微信用户不能访
+        问到其他登录用户的文件，同一个用户不同 appId 之间的文件也
+        不能互相访问。
+
+        -本地文件的文件路径均为以下格式：
+
+        {{协议名}}://文件路径
+        其中，协议名在 iOS/Android 客户端为 "wxfile"，在开发者工
+        具上为 "http"，开发者无需关注这个差异，也不应在代码中去硬
+        编码完整文件路径。
+
+        -本地临时文件
+
+        本地临时文件只能通过调用特定接口产生，不能直接写入内容。本
+        地临时文件产生后，仅在当前生命周期内有效，重启之后即不可用。
+        因此，不可把本地临时文件路径存储起来下次使用。如果需要下次
+        在使用，可通过 FileSystemManager.saveFile() 或
+        FileSystemManager.copyFile() 接口把本地临时文件转换成本
+        地缓存文件或本地用户文件。
+
+        -本地缓存文件
+
+        本地缓存文件只能通过调用特定接口产生，不能直接写入内容。本
+        地缓存文件产生后，重启之后仍可用。本地缓存文件只能通过
+        FileSystemManager.saveFile() 接口将本地临时文件保存获得。
+
+        -本地用户文件
+
+        本地用户文件是从 1.7.0 版本开始新增的概念。我们提供了一个
+        用户文件目录给开发者，开发者对这个目录有完全自由的读写权限。
+        通过 wx.env.USER_DATA_PATH 可以获取到这个目录的路径。
+
+        -读写权限
+
+        接口、组件	    读	写
+        代码包文件	    有	无
+        本地临时文件	有	无
+        本地缓存文件	有	无
+        本地用户文件	有	有
+     */
+    class 文件管理类 {
+        constructor() {
+            if (文件管理类.wx文件管理器) {
+                throw new Error('文件管理器已经初始化了,不必再调');
+            }
+            文件管理类.wx文件管理器 = wx.getFileSystemManager();
+            PIXI.autoDetectRenderer;
+        }
+        static 判断文件或目录是否存在(路径, 作用域) {
+            return new Promise((成功, 失败) => {
+                let 参数 = {
+                    path: 路径,
+                    success: 成功.bind(作用域),
+                    fail: 失败.bind(作用域)
+                };
+                this.wx文件管理器.access(参数);
+            });
+        }
+        /**
+         * 如果对应的上级目录已经存在，则不创建该上级目录。
+         * 如 dirPath 为 a/b/c/d 且 recursive 为 true，
+         * 将创建 a 目录，再在 a 目录下创建 b 目录，以此
+         * 类推直至创建 a/b/c 目录下的 d 目录。
+         * @param 目录路径
+         * @param 作用域
+         * @param 是否递归创建该目录的上级目录
+         */
+        static 创建目录(目录路径, 作用域, 是否递归创建该目录的上级目录 = false) {
+            return new Promise((成功, 失败) => {
+                let 参数 = {
+                    dirPath: 目录路径,
+                    recursive: 是否递归创建该目录的上级目录,
+                    success: 成功.bind(作用域),
+                    fail: 失败.bind(作用域)
+                };
+                this.wx文件管理器.mkdir(参数);
+            });
+        }
+        static 删除目录() {
+        }
+        static 删除文件() {
+        }
+        static 复制文件() {
+        }
+        static 重命名文件() {
+        }
+        static 读取目录内文件列表() {
+        }
+        static 写文件() {
+        }
+    }
+    主空间.文件管理类 = 文件管理类;
+})(主空间 || (主空间 = {}));
+var 主空间;
+(function (主空间) {
+    class 游戏 {
+        constructor(舞台) {
+            this.主舞台 = 舞台;
+            this.开始游戏();
+        }
+        开始游戏() {
+            PIXI.loader
+                .add('地图图集', 'json/dilao.json')
+                .add('地图数据', 'json/untitled.json')
+                .load(() => {
+                let 地图图集 = PIXI.loader.resources['地图图集'].textures;
+                let 地图数据 = PIXI.loader.resources['地图数据'].data;
+                let 地图 = new 主空间.地图类(地图图集, 地图数据);
+                this.主舞台.addChild(地图);
+                地图.interactive = true;
+                地图.on('touchstart', (eve) => {
+                    let tx = parseInt(eve.data.global.x + '');
+                    let ty = parseInt(eve.data.global.y + '');
+                    let cx = tx - 地图.x;
+                    let cy = ty - 地图.y;
+                    地图.on('touchmove', (eve) => {
+                        let x = parseInt(eve.data.global.x + '');
+                        let y = parseInt(eve.data.global.y + '');
+                        地图.x = x - cx;
+                        地图.y = y - cy;
+                        地图.移动矩形();
+                    });
+                    地图.once('touchend', (eve) => {
+                        地图.off('touchmove');
+                    });
+                });
+                // let sheet = PIXI.loader.resources['dilao']
+                // let text = sheet.textures['tiles-9.png']
+                // let sp = new PIXI.Sprite(text)
+                // sp.x = 0
+                // sp.y = 0
+                // sp.interactive = true
+                // sp.on('touchstart',()=>{
+                //     let sjs = Math.random()*29 +''
+                //     sp.texture = sheet.textures['tiles-'+parseInt(sjs)+'.png']
+                // })
+                // this.主舞台.addChild(sp)
+                // let text2 = sheet.textures['tiles-1.png']
+                // let sp2 = new PIXI.Sprite(text2)
+                // sp2.x = 24
+                // sp2.y = 0
+                // sp2.interactive = true
+                // sp2.on('click',()=>{
+                //     let sjs = Math.random()*29 +''
+                //     sp2.texture = sheet.textures['tiles-'+parseInt(sjs)+'.png']
+                // })
+                // this.主舞台.addChild(sp2)
+            });
+        }
+    }
+    主空间.游戏 = 游戏;
+})(主空间 || (主空间 = {}));
+var 主空间;
+(function (主空间) {
+    class 网络连接类 {
+        static 创建一个网络连接(开发者服务器wss接口地址, 作用域, HTTPHeader, 子协议数组) {
+            return new Promise((成功, 失败) => {
+                let 网络连接 = new 网络连接类();
+                let 参数 = {
+                    url: 开发者服务器wss接口地址,
+                    success: 成功.bind(作用域, [网络连接]),
+                    fail: 失败.bind(作用域)
+                };
+                网络连接.wx网络连接类 = window['wx'].connectSocket(参数);
+            });
+        }
+        发送数据(数据, 作用域) {
+            return new Promise((成功, 失败) => {
+                let 参数 = {
+                    data: 数据,
+                    success: 成功.bind(作用域),
+                    fail: 失败.bind(作用域)
+                };
+                this.wx网络连接类.send(参数);
+            });
+        }
+        关闭连接(作用域) {
+            return new Promise((成功, 失败) => {
+                let 参数 = {
+                    success: 成功.bind(作用域),
+                    fail: 失败.bind(作用域)
+                };
+                this.wx网络连接类.close(参数);
+            });
+        }
+        /**
+         * @param 作用域
+         * @param 事件函数(HTTP响应Header:object)
+         */
+        监听连接成功事件(作用域, 事件函数) {
+            let 函数 = 事件函数.bind(作用域);
+            this.wx网络连接类.onOpen(函数);
+        }
+        /**
+         * @param 作用域
+         * @param 事件函数 ()
+         */
+        监听连接关闭事件(作用域, 事件函数) {
+            let 函数 = 事件函数.bind(作用域);
+            this.wx网络连接类.onClose(函数);
+        }
+        /**
+         * @param 作用域
+         * @param 事件函数 (错误信息:string)
+         */
+        监听错误事件(作用域, 事件函数) {
+            let 函数 = 事件函数.bind(作用域);
+            this.wx网络连接类.onError(函数);
+        }
+        /**
+         * @param 作用域
+         * @param 事件函数 (服务器返回的消息:string|ArrayBuffer)
+         */
+        监听接受到服务器的消息事件(作用域, 事件函数) {
+            let 函数 = 事件函数.bind(作用域);
+            this.wx网络连接类.onMessage(函数);
+        }
+    }
+    主空间.网络连接类 = 网络连接类;
+})(主空间 || (主空间 = {}));
+var 主空间;
+(function (主空间) {
+    class 设置类 {
+        constructor(参数) {
+            this.舞台宽度 = 参数.width;
+            this.舞台高度 = 参数.height;
+            this.屏幕宽度 = 参数.width * 参数.resolution;
+            this.屏幕高度 = 参数.height * 参数.resolution;
+            this.缩放比例 = 参数.resolution;
+        }
+    }
+    主空间.设置类 = 设置类;
+})(主空间 || (主空间 = {}));
+var 主空间;
+(function (主空间) {
     class 地图块池类 {
         constructor(纹理字典) {
             this.池 = [];
@@ -232,9 +507,6 @@ var 主空间;
             }
             if (纹理) {
                 地图块.texture = 纹理;
-            }
-            else {
-                console.log('数据' + 数据);
             }
             return 地图块;
         }
@@ -429,282 +701,5 @@ var 主空间;
         }
     }
     主空间.地图类 = 地图类;
-})(主空间 || (主空间 = {}));
-var 主空间;
-(function (主空间) {
-    /** 文件主要分为两大类：
-
-        代码包文件：代码包文件指的是在项目目录中添加的文件。
-
-        本地文件：通过调用接口本地产生，或通过网络下载下来，存储到
-        本地的文件。
-        
-        其中本地文件又分为三种：
-
-        本地临时文件：临时产生，随时会被回收的文件。不限制存储大小。
-
-        本地缓存文件：小程序通过接口把本地临时文件缓存后产生的文件，
-        不能自定义目录和文件名。除非用户主动删除小程序，否则不会被
-        删除。跟本地用户文件共计，普通小程序最多可存储 10MB，游戏
-        类目的小程序最多可存储 50MB。
-
-        本地用户文件：小程序通过接口把本地临时文件缓存后产生的文件，
-        允许自定义目录和文件名。除非用户主动删除小程序，否则不会被
-        删除。跟本地用户文件共计，普通小程序最多可存储 10MB，游戏
-        类目的小程序最多可存储 50MB。
-
-        -代码包文件
-
-        由于代码包文件大小限制，代码包文件适用于放置首次加载时需要
-        的文件，对于内容较大或需要动态替换的文件，不推荐用添加到代
-        码包中，推荐在小游戏启动之后再用下载接口下载到本地。
-
-        -访问代码包文件
-
-        代码包文件的访问方式是从项目根目录开始写文件路径，不支持相
-        对路径的写法。
-
-        -修改代码包文件
-
-        代码包内的文件无法在运行后动态修改或删除，修改代码包文件需
-        要重新发布版本。
-
-        -本地文件
-
-        本地文件指的是小程序被用户添加到手机后，会有一块独立的文件
-        存储区域，以用户维度隔离。即同一台手机，每个微信用户不能访
-        问到其他登录用户的文件，同一个用户不同 appId 之间的文件也
-        不能互相访问。
-
-        -本地文件的文件路径均为以下格式：
-
-        {{协议名}}://文件路径
-        其中，协议名在 iOS/Android 客户端为 "wxfile"，在开发者工
-        具上为 "http"，开发者无需关注这个差异，也不应在代码中去硬
-        编码完整文件路径。
-
-        -本地临时文件
-
-        本地临时文件只能通过调用特定接口产生，不能直接写入内容。本
-        地临时文件产生后，仅在当前生命周期内有效，重启之后即不可用。
-        因此，不可把本地临时文件路径存储起来下次使用。如果需要下次
-        在使用，可通过 FileSystemManager.saveFile() 或
-        FileSystemManager.copyFile() 接口把本地临时文件转换成本
-        地缓存文件或本地用户文件。
-
-        -本地缓存文件
-
-        本地缓存文件只能通过调用特定接口产生，不能直接写入内容。本
-        地缓存文件产生后，重启之后仍可用。本地缓存文件只能通过
-        FileSystemManager.saveFile() 接口将本地临时文件保存获得。
-
-        -本地用户文件
-
-        本地用户文件是从 1.7.0 版本开始新增的概念。我们提供了一个
-        用户文件目录给开发者，开发者对这个目录有完全自由的读写权限。
-        通过 wx.env.USER_DATA_PATH 可以获取到这个目录的路径。
-
-        -读写权限
-
-        接口、组件	    读	写
-        代码包文件	    有	无
-        本地临时文件	有	无
-        本地缓存文件	有	无
-        本地用户文件	有	有
-     */
-    class 文件管理类 {
-        constructor() {
-            if (文件管理类.wx文件管理器) {
-                throw new Error('文件管理器已经初始化了,不必再调');
-            }
-            文件管理类.wx文件管理器 = wx.getFileSystemManager();
-            PIXI.autoDetectRenderer;
-        }
-        static 判断文件或目录是否存在(路径, 作用域) {
-            return new Promise((成功, 失败) => {
-                let 参数 = {
-                    path: 路径,
-                    success: 成功.bind(作用域),
-                    fail: 失败.bind(作用域)
-                };
-                this.wx文件管理器.access(参数);
-            });
-        }
-        /**
-         * 如果对应的上级目录已经存在，则不创建该上级目录。
-         * 如 dirPath 为 a/b/c/d 且 recursive 为 true，
-         * 将创建 a 目录，再在 a 目录下创建 b 目录，以此
-         * 类推直至创建 a/b/c 目录下的 d 目录。
-         * @param 目录路径
-         * @param 作用域
-         * @param 是否递归创建该目录的上级目录
-         */
-        static 创建目录(目录路径, 作用域, 是否递归创建该目录的上级目录 = false) {
-            return new Promise((成功, 失败) => {
-                let 参数 = {
-                    dirPath: 目录路径,
-                    recursive: 是否递归创建该目录的上级目录,
-                    success: 成功.bind(作用域),
-                    fail: 失败.bind(作用域)
-                };
-                this.wx文件管理器.mkdir(参数);
-            });
-        }
-        static 删除目录() {
-        }
-        static 删除文件() {
-        }
-        static 复制文件() {
-        }
-        static 重命名文件() {
-        }
-        static 读取目录内文件列表() {
-        }
-        static 写文件() {
-        }
-    }
-    主空间.文件管理类 = 文件管理类;
-})(主空间 || (主空间 = {}));
-var 主空间;
-(function (主空间) {
-    class 游戏 {
-        constructor(舞台) {
-            this.主舞台 = 舞台;
-            this.开始游戏();
-        }
-        开始游戏() {
-            PIXI.loader
-                .add('地图图集', 'json/dilao.json')
-                .add('地图数据', 'json/untitled.json')
-                .load(() => {
-                let 地图图集 = PIXI.loader.resources['地图图集'].textures;
-                let 地图数据 = PIXI.loader.resources['地图数据'].data;
-                let 地图 = new 主空间.地图类(地图图集, 地图数据);
-                this.主舞台.addChild(地图);
-                地图.interactive = true;
-                地图.on('touchstart', (eve) => {
-                    console.log('canshu');
-                    let tx = parseInt(eve.data.global.x + '');
-                    let ty = parseInt(eve.data.global.y + '');
-                    let cx = tx - 地图.x;
-                    let cy = ty - 地图.y;
-                    地图.on('touchmove', (eve) => {
-                        console.log('canshu');
-                        let x = parseInt(eve.data.global.x + '');
-                        let y = parseInt(eve.data.global.y + '');
-                        地图.x = x - cx;
-                        地图.y = y - cy;
-                        地图.移动矩形();
-                    });
-                    地图.once('touchend', (eve) => {
-                        地图.off('touchmove');
-                    });
-                });
-                // let sheet = PIXI.loader.resources['dilao']
-                // let text = sheet.textures['tiles-9.png']
-                // let sp = new PIXI.Sprite(text)
-                // sp.x = 0
-                // sp.y = 0
-                // sp.interactive = true
-                // sp.on('touchstart',()=>{
-                //     let sjs = Math.random()*29 +''
-                //     sp.texture = sheet.textures['tiles-'+parseInt(sjs)+'.png']
-                // })
-                // this.主舞台.addChild(sp)
-                // let text2 = sheet.textures['tiles-1.png']
-                // let sp2 = new PIXI.Sprite(text2)
-                // sp2.x = 24
-                // sp2.y = 0
-                // sp2.interactive = true
-                // sp2.on('click',()=>{
-                //     let sjs = Math.random()*29 +''
-                //     sp2.texture = sheet.textures['tiles-'+parseInt(sjs)+'.png']
-                // })
-                // this.主舞台.addChild(sp2)
-            });
-        }
-    }
-    主空间.游戏 = 游戏;
-})(主空间 || (主空间 = {}));
-var 主空间;
-(function (主空间) {
-    class 网络连接类 {
-        static 创建一个网络连接(开发者服务器wss接口地址, 作用域, HTTPHeader, 子协议数组) {
-            return new Promise((成功, 失败) => {
-                let 网络连接 = new 网络连接类();
-                let 参数 = {
-                    url: 开发者服务器wss接口地址,
-                    success: 成功.bind(作用域, [网络连接]),
-                    fail: 失败.bind(作用域)
-                };
-                网络连接.wx网络连接类 = window['wx'].connectSocket(参数);
-            });
-        }
-        发送数据(数据, 作用域) {
-            return new Promise((成功, 失败) => {
-                let 参数 = {
-                    data: 数据,
-                    success: 成功.bind(作用域),
-                    fail: 失败.bind(作用域)
-                };
-                this.wx网络连接类.send(参数);
-            });
-        }
-        关闭连接(作用域) {
-            return new Promise((成功, 失败) => {
-                let 参数 = {
-                    success: 成功.bind(作用域),
-                    fail: 失败.bind(作用域)
-                };
-                this.wx网络连接类.close(参数);
-            });
-        }
-        /**
-         * @param 作用域
-         * @param 事件函数(HTTP响应Header:object)
-         */
-        监听连接成功事件(作用域, 事件函数) {
-            let 函数 = 事件函数.bind(作用域);
-            this.wx网络连接类.onOpen(函数);
-        }
-        /**
-         * @param 作用域
-         * @param 事件函数 ()
-         */
-        监听连接关闭事件(作用域, 事件函数) {
-            let 函数 = 事件函数.bind(作用域);
-            this.wx网络连接类.onClose(函数);
-        }
-        /**
-         * @param 作用域
-         * @param 事件函数 (错误信息:string)
-         */
-        监听错误事件(作用域, 事件函数) {
-            let 函数 = 事件函数.bind(作用域);
-            this.wx网络连接类.onError(函数);
-        }
-        /**
-         * @param 作用域
-         * @param 事件函数 (服务器返回的消息:string|ArrayBuffer)
-         */
-        监听接受到服务器的消息事件(作用域, 事件函数) {
-            let 函数 = 事件函数.bind(作用域);
-            this.wx网络连接类.onMessage(函数);
-        }
-    }
-    主空间.网络连接类 = 网络连接类;
-})(主空间 || (主空间 = {}));
-var 主空间;
-(function (主空间) {
-    class 设置类 {
-        constructor(参数) {
-            this.舞台宽度 = 参数.width;
-            this.舞台高度 = 参数.height;
-            this.屏幕宽度 = 参数.width * 参数.resolution;
-            this.屏幕高度 = 参数.height * 参数.resolution;
-            this.缩放比例 = 参数.resolution;
-        }
-    }
-    主空间.设置类 = 设置类;
 })(主空间 || (主空间 = {}));
 //# sourceMappingURL=bundle.js.map

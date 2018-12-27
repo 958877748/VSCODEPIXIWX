@@ -18,13 +18,11 @@ namespace 主空间 {
                 地图.interactive = true
 
                 地图.on('touchstart',(eve:PIXI.interaction.InteractionEvent)=>{
-                    console.log('canshu')
                     let tx = parseInt(eve.data.global.x+'')
                     let ty = parseInt(eve.data.global.y+'')
                     let cx = tx-地图.x
                     let cy = ty-地图.y
                     地图.on('touchmove',(eve:PIXI.interaction.InteractionEvent)=>{
-                        console.log('canshu')
                         let x = parseInt(eve.data.global.x+'')
                         let y = parseInt(eve.data.global.y+'')
                         地图.x = x - cx
