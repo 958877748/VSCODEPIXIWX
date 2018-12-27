@@ -216,6 +216,9 @@ var 主空间;
         constructor(纹理字典) {
             this.池 = [];
             this.纹理引用 = 纹理字典;
+            let 地图块 = new 主空间.地图块类();
+            this.空白纹理 = 地图块.texture;
+            this.回收地图块(地图块);
         }
         获取地图块(数据) {
             let 纹理 = this.纹理引用['tiles-' + (数据 - 1) + '.png'];
@@ -236,6 +239,7 @@ var 主空间;
             return 地图块;
         }
         回收地图块(地图块) {
+            地图块.texture = this.空白纹理;
             this.池.push(地图块);
         }
     }
@@ -274,6 +278,18 @@ var 主空间;
             this.地图宽度 = 地图json数据.width;
             this.地图层数据 = this.所有地图层[0].data;
         }
+        根据地图块坐标取地图块数据(坐标) {
+            if (坐标.x >= this.地图宽度 || 坐标.y >= this.地图高度) {
+                return -1;
+            }
+            if (坐标.x < 0 || 坐标.y < 0) {
+                return -1;
+            }
+            //根据XY坐标算出数据下标
+            let 下标 = 坐标.y * 30 + 坐标.x;
+            //返回该下标的数据
+            return this.地图层数据[下标];
+        }
     }
     主空间.地图数据类 = 地图数据类;
 })(主空间 || (主空间 = {}));
@@ -282,15 +298,17 @@ var 主空间;
     class 地图类 extends PIXI.Container {
         constructor(地图图集, 地图数据) {
             super();
-            this.正在显示的地图块池 = new Map();
+            this.正在显示的地图块池 = {};
             this.地图数据 = new 主空间.地图数据类(地图数据);
             this.地图块池 = new 主空间.地图块池类(地图图集);
             this.计算实际要显示的块多少();
             this.根据显示矩形显示所有地图块(this.显示矩形);
         }
         移动矩形() {
-            this.显示矩形.x = this.显示矩形.x + 1;
-            this.x = this.x - 1;
+            //更新显示矩形
+            this.显示矩形.x = -(this.x - this.左间隙);
+            this.显示矩形.y = -(this.y - this.上间隙);
+            //更新地图块
             this.根据显示矩形显示所有地图块(this.显示矩形);
         }
         根据显示矩形显示所有地图块(矩形) {
@@ -337,7 +355,7 @@ var 主空间;
             else {
                 //3.如果没显示
                 //4.取出该坐标对应的地图块数据
-                let 地图块数据 = this.根据地图块坐标取地图块数据(坐标);
+                let 地图块数据 = this.地图数据.根据地图块坐标取地图块数据(坐标);
                 //5.很据地图块数据从池中拿出地图块对象
                 地图块 = this.地图块池.获取地图块(地图块数据);
                 //6.将地图块添加到地图上
@@ -348,14 +366,6 @@ var 主空间;
                 this.正在显示的地图块池[地图块标识] = 地图块;
             }
             return 地图块;
-        }
-        根据地图块坐标取地图块数据(坐标) {
-            //拿到地图所有块数据
-            let 数据 = this.地图数据.地图层数据;
-            //根据XY坐标算出数据下标
-            let 下标 = 坐标.y * 30 + 坐标.x;
-            //返回该下标的数据
-            return 数据[下标];
         }
         //计算坐标时,如果刚好在x分界线上,会被算为右边的地图块
         //计算坐标时,如果刚好在y分界线上,会被算为下边的地图块
@@ -409,6 +419,8 @@ var 主空间;
             }
             this.x = 左间隙;
             this.y = 上间隙;
+            this.左间隙 = 左间隙;
+            this.上间隙 = 上间隙;
             this.显示矩形.x = 0;
             this.显示矩形.y = 0;
             this.显示矩形.width = 水平多少图块 * 图块宽度;
@@ -570,8 +582,23 @@ var 主空间;
                 let 地图 = new 主空间.地图类(地图图集, 地图数据);
                 this.主舞台.addChild(地图);
                 地图.interactive = true;
-                地图.on('click', () => {
-                    地图.移动矩形();
+                地图.on('touchstart', (eve) => {
+                    console.log('canshu');
+                    let tx = parseInt(eve.data.global.x + '');
+                    let ty = parseInt(eve.data.global.y + '');
+                    let cx = tx - 地图.x;
+                    let cy = ty - 地图.y;
+                    地图.on('touchmove', (eve) => {
+                        console.log('canshu');
+                        let x = parseInt(eve.data.global.x + '');
+                        let y = parseInt(eve.data.global.y + '');
+                        地图.x = x - cx;
+                        地图.y = y - cy;
+                        地图.移动矩形();
+                    });
+                    地图.once('touchend', (eve) => {
+                        地图.off('touchmove');
+                    });
                 });
                 // let sheet = PIXI.loader.resources['dilao']
                 // let text = sheet.textures['tiles-9.png']

@@ -11,6 +11,5 @@ namespace 主空间{
             this.height = 24
         }
 
-        
     }
 }

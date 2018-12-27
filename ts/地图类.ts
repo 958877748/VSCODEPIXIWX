@@ -6,7 +6,9 @@ namespace 主空间 {
         //移动地图,改变显示矩形的坐标,同时所有子类,根据矩形去显示
         //显示矩形相当于摄像机
         显示矩形: PIXI.Rectangle
-        正在显示的地图块池 = new Map()
+        正在显示的地图块池 = {}
+        左间隙:number
+        上间隙:number
 
         constructor(地图图集: PIXI.loaders.TextureDictionary, 地图数据) {
             super()
@@ -17,8 +19,10 @@ namespace 主空间 {
         }
 
         移动矩形(){
-            this.显示矩形.x = this.显示矩形.x + 1
-            this.x = this.x - 1
+            //更新显示矩形
+            this.显示矩形.x = -(this.x-this.左间隙)
+            this.显示矩形.y = -(this.y-this.上间隙)
+            //更新地图块
             this.根据显示矩形显示所有地图块(this.显示矩形)
         }
 
@@ -66,7 +70,7 @@ namespace 主空间 {
             } else {
                 //3.如果没显示
                 //4.取出该坐标对应的地图块数据
-                let 地图块数据 = this.根据地图块坐标取地图块数据(坐标)
+                let 地图块数据 = this.地图数据.根据地图块坐标取地图块数据(坐标)
                 //5.很据地图块数据从池中拿出地图块对象
                 地图块 = this.地图块池.获取地图块(地图块数据)
                 //6.将地图块添加到地图上
@@ -77,15 +81,6 @@ namespace 主空间 {
                 this.正在显示的地图块池[地图块标识] = 地图块
             }
             return 地图块
-        }
-
-        private 根据地图块坐标取地图块数据(坐标: { x: number, y: number }) {
-            //拿到地图所有块数据
-            let 数据: [] = this.地图数据.地图层数据
-            //根据XY坐标算出数据下标
-            let 下标 = 坐标.y * 30 + 坐标.x
-            //返回该下标的数据
-            return 数据[下标]
         }
 
         //计算坐标时,如果刚好在x分界线上,会被算为右边的地图块
@@ -145,6 +140,8 @@ namespace 主空间 {
 
             this.x = 左间隙
             this.y = 上间隙
+            this.左间隙 = 左间隙
+            this.上间隙 = 上间隙
 
             this.显示矩形.x = 0
             this.显示矩形.y = 0
