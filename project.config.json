@@ -1,17 +1,17 @@
 {
 	"description": "项目配置文件。",
 	"setting": {
-		"urlCheck": false,
+		"urlCheck": true,
 		"es6": true,
 		"postcss": true,
 		"minified": false,
 		"newFeature": true,
 		"autoAudits": false
 	},
-	"compileType": "game",
+	"compileType": "miniprogram",
 	"libVersion": "2.4.3",
-	"appid": "wxf512bff9ee5503d1",
-	"projectname": "wxlx2",
+	"appid": "wx67f997c672c783df",
+	"projectname": "%E6%B8%B8%E6%88%8F",
 	"scripts": {
 		"beforeCompile": "tsc",
 		"beforePreview": "tsc",

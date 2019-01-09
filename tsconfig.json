@@ -17,5 +17,8 @@
 		"emitBOM": false,
 		//报告未使用的局部变量的错误。
 		"noUnusedLocals": false,
+		"typeRoots": [
+			"ty提示"
+		]
 	}
 }

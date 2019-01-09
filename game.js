@@ -32,6 +32,7 @@ function show(str) {
 		console.log(str)
 	}
 }
+
 //----------授权
 show('获取用户授权设置')
 wx.getSetting({
@@ -63,11 +64,19 @@ wx.getSetting({
 				withCredentials: false
 			})
 			button.onTap((res) => {
+				//userInfo
+				//	avatarUrl	头像
+				//	city		城市
+				//	country		国家
+				//	gender		男女
+				//	language	语言
+				//	nickName	名称
+				//	province	省份
 				let userInfo = res.userInfo
 				if (userInfo) {
 					button.destroy()
 					show('用户点击了授权')
-					show(userInfo)
+					upPlayData('userInfo',userInfo)
 				} else {
 					show('用户拒绝了授权')
 				}
@@ -78,3 +87,28 @@ wx.getSetting({
 		show('获取用户授权设置失败')
 	}
 })
+
+function upPlayData(name,data) {
+	show('上传用户数据')
+	let url = 'https://service-ggmx17xf-1258252054.ap-beijing.apigateway.myqcloud.com/release/api_1'
+	let value = JSON.stringify(data)
+	let value2 = 主空间.BISON.encode(data)
+	let value3 = 主空间.BISON.decode(value2)
+	let 用户id = 'key12345' 
+	wx.request({
+		url: url,
+		method: 'POST',
+		header: {
+			'content-type': 'text/plain;charset=UTF-8',
+			'X-TX-COSID': 用户id+name
+		},
+		data: data,
+		success: (res) => {
+			show('上传数据成功')
+			show(res)
+		},
+		fail: () => {
+			show('上传数据失败')
+		}
+	})
+}
