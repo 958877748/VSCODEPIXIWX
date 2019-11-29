@@ -9,7 +9,7 @@
 		"autoAudits": false
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.4.3",
+	"libVersion": "2.5.1",
 	"appid": "wx67f997c672c783df",
 	"projectname": "%E6%B8%B8%E6%88%8F",
 	"scripts": {

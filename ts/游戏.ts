@@ -3,7 +3,7 @@ namespace 主空间 {
         主舞台: PIXI.Container
         constructor(舞台: PIXI.Container) {
             this.主舞台 = 舞台
-            this.开始游戏()
+            this.开始游戏2()
         }
 
         private 开始游戏() {
@@ -33,30 +33,18 @@ namespace 主空间 {
                         地图.off('touchmove')
                     })
                 })
-
-                
-                // let sheet = PIXI.loader.resources['dilao']
-                // let text = sheet.textures['tiles-9.png']
-                // let sp = new PIXI.Sprite(text)
-                // sp.x = 0
-                // sp.y = 0
-                // sp.interactive = true
-                // sp.on('touchstart',()=>{
-                //     let sjs = Math.random()*29 +''
-                //     sp.texture = sheet.textures['tiles-'+parseInt(sjs)+'.png']
-                // })
-                // this.主舞台.addChild(sp)
-                // let text2 = sheet.textures['tiles-1.png']
-                // let sp2 = new PIXI.Sprite(text2)
-                // sp2.x = 24
-                // sp2.y = 0
-                // sp2.interactive = true
-                // sp2.on('click',()=>{
-                //     let sjs = Math.random()*29 +''
-                //     sp2.texture = sheet.textures['tiles-'+parseInt(sjs)+'.png']
-                // })
-                // this.主舞台.addChild(sp2)
             })
+        }
+
+        private 开始游戏2(){
+            let 精灵 = new PIXI.Sprite()
+            let 随机地图数据 = new Array2D(100,100)
+            let 所有房子 = new Array<房子>()
+            let 随机房子尝试次数 = 200
+            while (随机房子尝试次数 > 0 && 随机房子尝试次数--) {
+                let 房子宽度 = 随机模块.范围随机整数(2,5)
+                let 房子高度 = 随机模块.范围随机整数(2,5)
+            }
         }
     }
 }

@@ -1,5 +1,37 @@
 var 主空间;
 (function (主空间) {
+    /**
+     * 一个指定类型的2维数组
+     */
+    class Array2D extends Array {
+        //bounds:Rect
+        constructor(宽度, 高度) {
+            super(宽度);
+            for (let index = 0; index < 宽度; index++) {
+                this[index] = new Array(高度);
+            }
+        }
+        /**
+         * 获取2维数组中的某数据
+         * @param x
+         * @param y
+         */
+        get(x, y) {
+            return this[x][y];
+        }
+        /**
+         * 更改某坐标上的元素
+         * @param 坐标
+         * @param 新元素
+         */
+        set(坐标x, 坐标y, 新元素) {
+            this[坐标x][坐标y] = 新元素;
+        }
+    }
+    主空间.Array2D = Array2D;
+})(主空间 || (主空间 = {}));
+var 主空间;
+(function (主空间) {
     /*
         Copyright (c) 2010-2011 Ivo Wetzel.
 
@@ -464,6 +496,14 @@ var 主空间;
 })(主空间 || (主空间 = {}));
 var 主空间;
 (function (主空间) {
+    class 房子 {
+        constructor(宽度, 高度) {
+        }
+    }
+    主空间.房子 = 房子;
+})(主空间 || (主空间 = {}));
+var 主空间;
+(function (主空间) {
     /** 文件主要分为两大类：
 
         代码包文件：代码包文件指的是在项目目录中添加的文件。
@@ -602,7 +642,7 @@ var 主空间;
     class 游戏 {
         constructor(舞台) {
             this.主舞台 = 舞台;
-            this.开始游戏();
+            this.开始游戏2();
         }
         开始游戏() {
             PIXI.loader
@@ -630,31 +670,57 @@ var 主空间;
                         地图.off('touchmove');
                     });
                 });
-                // let sheet = PIXI.loader.resources['dilao']
-                // let text = sheet.textures['tiles-9.png']
-                // let sp = new PIXI.Sprite(text)
-                // sp.x = 0
-                // sp.y = 0
-                // sp.interactive = true
-                // sp.on('touchstart',()=>{
-                //     let sjs = Math.random()*29 +''
-                //     sp.texture = sheet.textures['tiles-'+parseInt(sjs)+'.png']
-                // })
-                // this.主舞台.addChild(sp)
-                // let text2 = sheet.textures['tiles-1.png']
-                // let sp2 = new PIXI.Sprite(text2)
-                // sp2.x = 24
-                // sp2.y = 0
-                // sp2.interactive = true
-                // sp2.on('click',()=>{
-                //     let sjs = Math.random()*29 +''
-                //     sp2.texture = sheet.textures['tiles-'+parseInt(sjs)+'.png']
-                // })
-                // this.主舞台.addChild(sp2)
             });
+        }
+        开始游戏2() {
+            let 精灵 = new PIXI.Sprite();
+            let 随机地图数据 = new 主空间.Array2D(100, 100);
+            let 所有房子 = new Array();
+            let 随机房子尝试次数 = 200;
+            while (随机房子尝试次数 > 0 && 随机房子尝试次数--) {
+                let 房子宽度 = 主空间.随机模块.范围随机整数(2, 5);
+                let 房子高度 = 主空间.随机模块.范围随机整数(2, 5);
+            }
         }
     }
     主空间.游戏 = 游戏;
+})(主空间 || (主空间 = {}));
+/// <reference path="事件调度类.ts" />
+var 主空间;
+(function (主空间) {
+    class 游戏数据类 extends 主空间.事件调度类 {
+        /**
+         * 所有数据的改变修改都必须通过此方法,以便对属性变化进行通知
+         * @param 数据名 改变的数据名称字段
+         * @param 新数据值 数据名称字段对应的新值
+         */
+        修改更新数据(改变的字段, 字段的新值) {
+            let 当前数据值 = this;
+            if (改变的字段.indexOf('.') > -1) {
+                let 数组 = 改变的字段.split('.');
+                let 属性名, 对象;
+                while (数组.length > 0) {
+                    对象 = 当前数据值;
+                    属性名 = 数组.shift();
+                    当前数据值 = 对象[属性名];
+                }
+                if (当前数据值 != 字段的新值) {
+                    对象[属性名] = 字段的新值;
+                    this.派发事件(改变的字段, 字段的新值);
+                }
+            }
+            else {
+                当前数据值 = this[改变的字段];
+                if (当前数据值 != 字段的新值) {
+                    this[改变的字段] = 字段的新值;
+                    this.派发事件(改变的字段, 字段的新值);
+                }
+            }
+        }
+    }
+    主空间.游戏数据类 = 游戏数据类;
+    class 用户信息 {
+    }
 })(主空间 || (主空间 = {}));
 var 主空间;
 (function (主空间) {
@@ -665,6 +731,17 @@ var 主空间;
         }
     }
     主空间.用户头像 = 用户头像;
+})(主空间 || (主空间 = {}));
+var 主空间;
+(function (主空间) {
+    class 用户授权 {
+        constructor() {
+        }
+        获取用户授权设置() {
+            wx.getSetting({});
+        }
+    }
+    主空间.用户授权 = 用户授权;
 })(主空间 || (主空间 = {}));
 var 主空间;
 (function (主空间) {
@@ -746,6 +823,25 @@ var 主空间;
         }
     }
     主空间.设置类 = 设置类;
+})(主空间 || (主空间 = {}));
+var 主空间;
+(function (主空间) {
+    class 随机模块 {
+        static 范围随机(最小, 最大) {
+            let 随机数 = Math.random();
+            let 随机范围 = 最大 - 最小;
+            let 未取整的随机数 = 随机数 * 随机范围 + 最小;
+            return 未取整的随机数;
+        }
+        static 范围随机整数(最小, 最大) {
+            let 随机数 = Math.random();
+            let 随机范围 = 最大 - 最小;
+            let 未取整的随机数 = 随机数 * 随机范围 + 最小;
+            let 取整的随机数 = parseInt(未取整的随机数 + '');
+            return 取整的随机数;
+        }
+    }
+    主空间.随机模块 = 随机模块;
 })(主空间 || (主空间 = {}));
 var 主空间;
 (function (主空间) {
